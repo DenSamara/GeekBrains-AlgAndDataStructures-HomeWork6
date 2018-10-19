@@ -4,6 +4,8 @@
 #include <locale.h>
 #include <math.h>
 
+//Коновалов Денис
+
 typedef int T;
 FILE * file;
 static int const ARRAY_LENGTH = 30;
@@ -15,6 +17,7 @@ typedef struct Node {
 	struct Node *parent;
 } Node;
 
+//-------------------------------Task 1------------------------------------
 //Будем накапливать дробную часть от деления счётчика на код символа
 //Работает и на 1 элементе и на 25
 unsigned long long int hash(char data[], int arraylength){
@@ -45,7 +48,7 @@ void printHash(char data[]){
 	}
 	printf("\n");
 }
-
+//--------------------------------Task 2-----------------------------------
 Node* getFreeNode(T value, Node *parent) {
     Node* tmp = (Node*) malloc(sizeof(Node));
     tmp->left = tmp->right = NULL;
@@ -135,8 +138,6 @@ Node* findNodeByValue(Node *root, T value) {
     return NULL;
 }
 	
-
-
 //Функция построение дерева
 Node* createBinarySearchTree(Node *root, int data[]){
 	int i = 0, value = data[0];
