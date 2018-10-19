@@ -15,61 +15,74 @@ typedef struct Node {
 	struct Node *parent;
 } Node;
 
-// Построить идеально сбалансированное дерево с n узлами
-Node *Tree ( int n)
-{
-	Node *newNode;
-	int x , nl , nr;
-
-	if ( n == 0 )
-		newNode = NULL;
-	else
-	{
-		x = n+n;
-		nl = n / 2;
-		nr = n - nl - 1;
-		newNode = ( Node*) malloc ( sizeof ( Node ));
-		newNode -> data = x;
-		newNode -> left = Tree ( nl );
-		newNode -> right = Tree ( nr );
-	}
-
-	return newNode;
+Node* getFreeNode(T value, Node *parent) {
+    Node* tmp = (Node*) malloc(sizeof(Node));
+    tmp->left = tmp->right = NULL;
+    tmp->data = value;
+    tmp->parent = parent;
+    return tmp;
 }
 
-// Распечатка двоичного дерева в виде скобочной записи
-void printTree (Node *root ) {
-	if (root)
-	{
-		printf ( "%d" , root -> data );
-		if ( root -> left || root -> right)
-		{
-			printf ( "(" );
-
-			if ( root -> left )
-				printTree ( root -> left );
-			else
-				printf ( "NULL" );
-
-			printf ( "," );
-
-			if ( root -> right )
-				printTree ( root -> right );
-			else
-				printf ( "NULL" );
-
-			printf ( ")" );
-		}
-	}
+void addNode(Node **head, int value){
+	Node *tmp = NULL;
+    Node *ins = NULL;
+    if (*head == NULL) {
+        *head = getFreeNode(value, NULL);
+        return;
+    }
+     
+    tmp = *head;
+    while (tmp) {
+        if (value > tmp->data) {
+            if (tmp->right) {
+                tmp = tmp->right;
+                continue;
+            } else {
+                tmp->right = getFreeNode(value, tmp);
+                return;
+            }
+        } else if (value < tmp->data) {
+            if (tmp->left) {
+                tmp = tmp->left;
+                continue;
+            } else {
+                tmp->left = getFreeNode(value, tmp);
+                return;
+            }
+        } else {
+            break;
+        }
+    }
 }
 
-void preOrderTravers ( Node *root ) {
-	if ( root ) {
-		printf ( "%d " , root -> data );
+Node* getMaxNode(Node *root) {
+    while (root->right) {
+        root = root->right;
+    }
+    return root;
+}
 
-		preOrderTravers ( root -> left );
-		preOrderTravers ( root -> right );
-	}
+Node* getNodeByValue(Node *root, T value) {
+    while (root) {
+        if (root->data > value) {
+            root = root->left;
+            continue;
+        } else if (root->data < value) {
+            root = root->right;
+            continue;
+        } else {
+            return root;
+        }
+    }
+    return NULL;
+}
+	
+void printTree(Node *root, const char *dir, int level) {
+    if (root) {
+        printf("lvl %d %s = %d\n", level, dir, root->data);
+        printTree(root->left, "left", level+1);
+        printTree(root->right, "right", level+1);
+    }
 }
 
 //Будем накапливать дробную часть от деления счётчика на код символа
@@ -102,29 +115,49 @@ void printHash(char data[]){
 	printf("\n");
 }
 
+Node* createBinarySearchTree(Node *root, int data[]){
+	int i = 0, value = data[0];
+	
+	while (value > -1){
+		addNode(&root, value);
+		i++;
+		value = data[i];
+	}
+	return root;
+}
+
+/*
+      10
+     /  \
+    7   12
+   /\   /\
+  6  9 11 14
+ /
+3
+ \
+  4
+*/
 int main(int argc, const char * argv[]){
-	Node* tree = NULL;
+	Node *tree = NULL;
 	int x = 0;
-	char data[] = {'S', 'i', 'm', 'p', 'l', 'e', ' ', 'd', 'a', 't', 'a', ' ', 't', 'o', ' ', 'd', 'e', 'm', 'o', 'n', 's', 't', 'r', 'a', 't', 'i', 'o', 'n', '\n'};
+	char dataForHash[] = {'S', 'i', 'm', 'p', 'l', 'e', ' ', 'd', 'a', 't', 'a', ' ', 't', 'o', ' ', 'd', 'e', 'm', 'o', 'n', 's', 't', 'r', 'a', 't', 'i', 'o', 'n', '\n'};
+	int dataForTree[] = {10, 7, 9, 12, 6, 14, 11, 3, 4, -1};
 
 	setlocale(LC_ALL, "Rus");
 
 	//--== Задание 1 ==--
 	// Реализовать простейшую хэш-функцию. На вход функции подается строка, на выходе сумма кодов символов.
 	printf("Данные для хеширования: ");
-	printHash(data);
+	printHash(dataForHash);
 
-	printf("Hash = %llu\n", hash(data, ARRAY_LENGTH));
+	printf("Hash = %llu\n", hash(dataForHash, ARRAY_LENGTH));
 	printf("\n");
 
 	//--== Задание 2 ==--
-	// Реализовать двоичное дерево поиска
-	printf("Введите количество узлов для дерева:\n");
-	scanf("%d", &x);
-	printf("\n");
-
-	tree = Tree(x);
-	printTree(tree);
+	//а. Реализовать двоичное дерево поиска
+	//Пусть нам надо поместить в дерево значения: 10 7 9 12 6 14 11 3 4
+	tree = createBinarySearchTree(tree, dataForTree);
+	printTree(tree, "root", 0);
 
 	printf("\n");
 	system("pause");
