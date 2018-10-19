@@ -185,8 +185,10 @@ int main(int argc, const char * argv[]){
 	//Добавить в дерево различные способы обхода;
 	printf("КЛП:\n");
 	printTree(tree, "root", 0);
+	
 	printf("КПЛ:\n");
 	printTreeKPL(tree, "root", 0);
+	
 	printf("ЛПК\n");
 	printTreeLPK(tree, "root", 0);
 
